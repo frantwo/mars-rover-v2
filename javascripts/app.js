@@ -1,5 +1,7 @@
+//Limits for the rover grid
 const LIMIT_X = 10;
 const LIMIT_Y = 10;
+//Values for the direction
 const NORTH = "N";
 const SOUTH = "S";
 const EAST = "E";
@@ -8,7 +10,6 @@ const WEST = "W"
 // Rover Object Goes Here
 // ======================
 var rover = {
-    /* direction values are: "N", "S", "E", "W" */
     direction: NORTH,
     x: 0,
     y: 0,
@@ -126,24 +127,36 @@ function moveBackward(rover) {
 
 function listCommands(listMovements) {
     for (var cont = 0; cont <= listMovements.length - 1; cont++) {
-        console.log("Movement: " + cont + "(" + listMovements[cont] + ")");
-        switch (listMovements[cont]) {
-            case "f":
-                moveForward(rover);
-                break;
-            case "l":
-                turnLeft(rover);
-                break;
-            case "r":
-                turnRight(rover);
-                break;
-            case "b":
-                moveBackward(rover);
-                break;
+        if (validMove(listMovements[cont])) {
+            switch (listMovements[cont]) {
+                case "f":
+                    moveForward(rover);
+                    console.log("Rover is moving forward to the direction: " + rover.direction);
+                    break;
+                case "l":
+                    turnLeft(rover);
+                    console.log("Rover is turning to the left and facing to the direction: " + rover.direction);
+                    break;
+                case "r":
+                    turnRight(rover);
+                    console.log("Rover is turning to the right and facing to the direction: " + rover.direction);
+                    break;
+                case "b":
+                    moveBackward(rover);
+                    console.log("Rover is moving backward to the direction: " + rover.direction);
+                    break;
+            }
+            rover.travelLog.push(rover.x + "," + rover.y);
         }
-        rover.travelLog.push(rover.x + "," + rover.y);
     }
+    console.log("-----------n" + "Tracking: ");
     rover.travelLog.forEach(movement => {
         console.log(movement);
     });
+}
+
+function validMove(movement) {
+    var validMovements = ["f", "l", "r", "b"];
+    return (validMovements.indexOf(movement) >= 0)
+
 }
