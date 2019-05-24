@@ -5,7 +5,15 @@ const LIMIT_Y = 10;
 const NORTH = "N";
 const SOUTH = "S";
 const EAST = "E";
-const WEST = "W"
+const WEST = "W";
+
+const EMPTY = "E";
+const OBSTACLE = "O";
+
+const MOVING_FORWARD = "f";
+const MOVING_BACKWARD = "b";
+const TURNING_LEFT = "l";
+const TURNING_RIGHT = "r";
 
 // Rover Object Goes Here
 // ======================
@@ -15,7 +23,21 @@ var rover = {
     y: 0,
     travelLog: []
 };
-// ======================
+
+var obstacles = [
+        [EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [OBSTACLE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, OBSTACLE],
+        [EMPTY, OBSTACLE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+        [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, OBSTACLE, OBSTACLE, EMPTY]
+    ]
+    //"rffrfflfrf"
+    // ======================
 
 function turnLeft(rover) {
     //console.log("Previous Direction: " + rover.direction);
@@ -128,24 +150,32 @@ function moveBackward(rover) {
 function listCommands(listMovements) {
     for (var cont = 0; cont <= listMovements.length - 1; cont++) {
         if (validMove(listMovements[cont])) {
-            switch (listMovements[cont]) {
-                case "f":
-                    moveForward(rover);
-                    console.log("Rover is moving forward to the direction: " + rover.direction);
-                    break;
-                case "l":
-                    turnLeft(rover);
-                    console.log("Rover is turning to the left and facing to the direction: " + rover.direction);
-                    break;
-                case "r":
-                    turnRight(rover);
-                    console.log("Rover is turning to the right and facing to the direction: " + rover.direction);
-                    break;
-                case "b":
-                    moveBackward(rover);
-                    console.log("Rover is moving backward to the direction: " + rover.direction);
-                    break;
+            console.log("Movement Nº" + cont);
+            console.log("============")
+            if (notThereIsObstacle(listMovements[cont])) {
+                console.log("Any obstacle detected");
+                switch (listMovements[cont]) {
+                    case MOVING_FORWARD:
+                        moveForward(rover);
+                        console.log("Rover is moving forward to the direction: " + rover.direction);
+                        break;
+                    case TURNING_LEFT:
+                        turnLeft(rover);
+                        console.log("Rover is turning to the left and facing to the direction: " + rover.direction);
+                        break;
+                    case TURNING_RIGHT:
+                        turnRight(rover);
+                        console.log("Rover is turning to the right and facing to the direction: " + rover.direction);
+                        break;
+                    case MOVING_BACKWARD:
+                        moveBackward(rover);
+                        console.log("Rover is moving backward to the direction: " + rover.direction);
+                        break;
+                }
+            } else {
+                console.log("Obstacle detected, ¡STOP ROVER!");
             }
+            console.log("Coordenates: " + rover.x + "," + rover.y);
             rover.travelLog.push(rover.x + "," + rover.y);
         }
     }
@@ -156,7 +186,45 @@ function listCommands(listMovements) {
 }
 
 function validMove(movement) {
-    var validMovements = ["f", "l", "r", "b"];
+    var validMovements = [MOVING_FORWARD, TURNING_LEFT, TURNING_RIGHT, MOVING_BACKWARD];
     return (validMovements.indexOf(movement) >= 0)
 
+}
+
+function notThereIsObstacle(movement) {
+    switch (movement) {
+        case MOVING_FORWARD:
+            switch (rover.direction) {
+                case NORTH:
+                    return (obstacles[rover.y - 1][rover.x] === EMPTY);
+                    break;
+                case EAST:
+                    return (obstacles[rover.y][rover.x + 1] === EMPTY);
+                    break;
+                case SOUTH:
+                    return (obstacles[rover.y + 1][rover.x] === EMPTY);
+                    break;
+                case WEST:
+                    return (obstacles[rover.y][rover.x - 1] === EMPTY);
+                    break;
+            }
+        case MOVING_BACKWARD:
+            switch (rover.direction) {
+                case NORTH:
+                    return (obstacles[rover.x][rover.y + 1] === EMPTY);
+                    break;
+                case EAST:
+                    return (obstacles[rover.x - 1][rover.y] === EMPTY);
+                    break;
+                case SOUTH:
+                    return (obstacles[rover.x][rover.y - 1] === EMPTY);
+                    break;
+                case WEST:
+                    return (obstacles[rover.x + 1][rover.y] === EMPTY);
+                    break;
+            }
+        default:
+            return true;
+            break;
+    }
 }
