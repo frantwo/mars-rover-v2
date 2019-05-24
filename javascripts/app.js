@@ -149,7 +149,7 @@ function listCommands(listMovements) {
             rover.travelLog.push(rover.x + "," + rover.y);
         }
     }
-    console.log("-----------n" + "Tracking: ");
+    console.log("-----------\n" + "Tracking: ");
     rover.travelLog.forEach(movement => {
         console.log(movement);
     });
